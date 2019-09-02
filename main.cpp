@@ -18,6 +18,9 @@ int main(int argc, char **argv)
 	ifstream input_file("config.json");
 	input_file >> config;
 
+	int strategy = get_strategy(config);
+	int num_task = get_num_task(config);
+
 	return 0;
 }	
 
