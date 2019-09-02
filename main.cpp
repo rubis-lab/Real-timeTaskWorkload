@@ -6,6 +6,10 @@
 // open-source libraries
 #include "json.hpp"
 
+// custom libraries
+#include "thr_routine.hpp"
+#include "ops.hpp"
+
 using namespace std;
 using json = nlohmann::json;
 
