@@ -31,8 +31,34 @@ int main(int argc, char **argv)
 
 	int thread_cnt = 0;
 	for(int i = 1; i <= num_task; i++) {
+		// configure threads
+		struct thr_arg targ;
+		struct thr_arg* targ_ptr = &targ;
+		targ_ptr->strategy = strategy;
+		targ_ptr->task_id = i;
+		targ_ptr->parent = gettid();
+		configure_task(targ_ptr, config, i);
+		//cout << "Processing: task #: " << i << ", having " << targ_ptr->popt << " thrs." << endl;
+
+		// create threads
+		for(int j = 1; j <= targ_ptr->popt; j++){
+			targ_ptr->thr_id = j;
+			configure_thread(targ_ptr, config, i, j);
+			struct thr_arg *arg = (struct thr_arg *) malloc(sizeof(*arg));
+
+			cout << "Creating task_id: " << i << " thr_id: " << j << "/" << targ.popt << endl;
+
+			// argument passed to thread
+			*arg = targ;
+			if (!arg) {
+	            fprintf(stderr, 
+	            	"[ERROR] Couldn't allocate memory for thread arg.\n");
+	            exit(EXIT_FAILURE);
+	        }
+        
 			pthread_create(&thread[thread_cnt], 0, run_deadline, arg);
 			thread_cnt++;
+		}
 	}
 
 	for(int i = 0; i < thread_cnt; i++) {
