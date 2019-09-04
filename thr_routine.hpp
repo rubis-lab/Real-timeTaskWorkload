@@ -1,12 +1,15 @@
 #ifndef __THR_ROUTINE_H__
 #define __THR_ROUTINE_H__
 
+#define ITER_DEFAULT 20
+
 #include <pthread.h>
 
 #include <iostream>
 
 #include "sched_deadline.hpp"
 
+#include "act.hpp"
 pthread_barrier_t init_barrier;
 
 using namespace std;
@@ -71,6 +74,22 @@ void *run_deadline(void *data) {
 		exit(-1);
 	}
 	
+	long int real_runtime;
+	for(int iter = 0; iter < ITER_DEFAULT; iter++) {
+		// thread workload
+		switch(thr_config.mode){
+			case _ACT: //actuator_and_stirring
+				real_runtime = actuator(thr_config.exec_time, thr_config.popt);
+				//cout << "_ACT is finished in " << real_runtime << " ms." << endl;
+				break;
+			default:
+				printf("[ERROR] The mode has incorrect value.\n");
+				exit(-1);
+		}
+
+		sched_yield();
+	}
+
 	return NULL;
 }
 
