@@ -1,0 +1,48 @@
+gcc -c -o dktest2.o dktest2.c -I/home/rtssae/darknet/include
+g++ -c -std=c++11 -o main.o main.cpp
+g++ -o test2 main.o dktest2.o /home/rtssae/darknet/libdarknet.a -lpthread -lm -L/usr/local/lib `pkg-config --libs --cflags opencv`
+
+currdir=${pwd}
+expdir=$currdir"result"
+rm -rf $expdir
+mkdir $expdir
+
+# run experiment OURS
+sudo mkdir $expdir"/cho"
+sudo cp $currdir"config/cho.json" "config.json"
+echo "Cho taskset running."
+sudo ./test2
+sudo mv "cho-thread"* $expdir"/cho"
+sudo cp "config.json" $expdir"/cho"
+
+# run experiment Single
+sudo mkdir $expdir"/single"
+sudo cp $currdir"config/single.json" "config.json"
+echo "Single taskset running."
+sudo ./test2
+sudo mv "single-thread"* $expdir"/single"
+sudo cp "config.json" $expdir"/single"
+
+# run experiment Max
+sudo mkdir $expdir"/max"
+sudo cp $currdir"config/max.json" "config.json"
+echo "Max taskset running."
+sudo ./test2
+sudo mv "max-thread"* $expdir"/max"
+sudo cp "config.json" $expdir"/max"
+
+# run experiment Random
+sudo mkdir $expdir"/random"
+sudo cp $currdir"config/random.json" "config.json"
+echo "Random taskset running."
+sudo ./test2
+sudo mv "random-thread"* $expdir"/random"
+sudo cp "config.json" $expdir"/random"
+
+echo "Packing Data"
+sudo python analysis.py
+sudo rm $expdir/cho/cho-thread*
+sudo rm $expdir/single/single-thread*
+sudo rm $expdir/max/max-thread*
+sudo rm $expdir/random/random-thread*
+
