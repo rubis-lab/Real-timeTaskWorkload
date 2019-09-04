@@ -65,6 +65,8 @@ feh predictions.jpg
 
 ## compiliation
 ```
+gcc -c -o dktest2.o dktest2.c -I/home/rubis/darknet/include
 g++ -c -std=c++11 -o main.o main.cpp
+g++ -o test2 main.o dktest2.o /home/rubis/darknet/libdarknet.a -lpthread -lm -L/usr/local/lib `pkg-config --libs --cflags opencv`
 ```
 
