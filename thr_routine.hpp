@@ -3,6 +3,7 @@
 
 #define ITER_DEFAULT 20
 
+#include <time.h>
 #include <pthread.h>
 
 #include <iostream>
@@ -11,6 +12,7 @@
 
 #include "act.hpp"
 #include "track.hpp"
+#include "sched_log.hpp"
 //#include "dktest2.h"
 
 extern "C" int init_darknet_detect_thr_routine(int thr_id, int num_thr);
@@ -90,8 +92,23 @@ void *run_deadline(void *data) {
 		exit(-1);
 	}
 	
+	// init logger
+	string fname = to_string(gettid()-thr_config.parent);
+	SchedLog slog(fname, thr_config.strategy);
+	slog.set_attr(thr_config.task_id, 
+		gettid() - thr_config.task_id, 
+		thr_config.exec_time, 
+		thr_config.deadline, 
+		thr_config.period,
+		thr_config.mode);
+	slog.create_header();
+
+	// timing
+	clock_t start_t, end_t, slack_t;
 	long int real_runtime;
 	for(int iter = 0; iter < ITER_DEFAULT; iter++) {
+		start_t = clock();
+
 		// thread workload
 		switch(thr_config.mode){
 			case _CAM: //sensor_read_camera_module
@@ -116,9 +133,15 @@ void *run_deadline(void *data) {
 				exit(-1);
 		}
 
+		// log data
+		end_t = clock();
+		cout << "thr_id: " << thr_config.thr_id << "\tmode: " << thr_config.mode << "\tpopt: " << thr_config.popt << "\titer: " << iter << "\tdeadline: " << thr_config.deadline << "\tstart_t: " << start_t << "\tend_t: " << end_t << "\truntime: " << end_t - start_t << endl;
+		slog.append(iter, start_t, end_t, real_runtime);
+
 		sched_yield();
 	}
 
+	slog.close();
 	return NULL;
 }
 
