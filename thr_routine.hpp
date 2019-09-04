@@ -11,6 +11,11 @@
 
 #include "act.hpp"
 #include "track.hpp"
+//#include "dktest2.h"
+
+extern "C" int init_darknet_detect_thr_routine(int thr_id, int num_thr);
+extern "C" int darknet_detect_thr_routine(int thr_id, int num_thr);
+
 pthread_barrier_t init_barrier;
 
 using namespace std;
@@ -67,6 +72,14 @@ void *run_deadline(void *data) {
 
     // init workloads
 	Track track;
+	switch(thr_config.mode){
+		case _DTCT: //object_detection 
+			init_darknet_detect_thr_routine(thr_config.thr_id, thr_config.popt);
+			break;
+		default:
+			break;
+	}
+
 
 	// configure thread attributes
 	struct sched_attr attr = configure_attr(thr_config);
@@ -89,6 +102,10 @@ void *run_deadline(void *data) {
 				// track.update();
 				real_runtime = autoware_vision_thr_routine(thr_config.popt);
 				//cout << "_TRCK is finished in " << real_runtime << " ms." << endl;
+				break;
+			case _DTCT: //object_detection 
+				real_runtime = darknet_detect_thr_routine(thr_config.thr_id, thr_config.popt);
+				//cout << "_DTCT is finished in " << real_runtime << " ms." << endl;
 				break;
 			case _ACT: //actuator_and_stirring
 				real_runtime = actuator(thr_config.exec_time, thr_config.popt);

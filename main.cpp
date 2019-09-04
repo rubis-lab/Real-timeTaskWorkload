@@ -1,4 +1,10 @@
 // g++ -o test1 main.cpp -lpthread -L/usr/local/lib `pkg-config --libs --cflags opencv` -std=c++11
+// g++ -c -std=c++11 -o main.o -I/home/rubis/darknet/include main.cpp
+// g++ -o test1 main.o dark.o 
+
+// g++ -c -std=c++11 -o main.o -I/home/rubis/darknet/include main.cpp
+// g++ -o test2 dark.o main.o /home/rubis/darknet/libdarknet.a -lpthread -lm -L/usr/local/lib `pkg-config --libs --cflags opencv` -std=c++11
+
 #include <pthread.h>
 #include <unistd.h>
 

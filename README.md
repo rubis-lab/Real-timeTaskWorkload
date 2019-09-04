@@ -47,6 +47,22 @@ g++ -o track tracker.cpp -L/usr/local/lib `pkg-config --libs --cflags opencv` -s
 ```
 
 
+## Darknet
+
+```
+git clone https://github.com/pjreddie/darknet.git
+cd darknet
+make
+wget https://pjreddie.com/media/files/yolov3-tiny.weights
+```
+
+### Object detection
+```
+./darknet detect cfg/yolov3-tiny.cfg yolov3-tiny.weights data/dog.jpg
+feh predictions.jpg
+```
+
+
 ## compiliation
 ```
 g++ -c -std=c++11 -o main.o main.cpp
