@@ -78,6 +78,10 @@ void *run_deadline(void *data) {
 	for(int iter = 0; iter < ITER_DEFAULT; iter++) {
 		// thread workload
 		switch(thr_config.mode){
+			case _CAM: //sensor_read_camera_module
+				real_runtime = actuator(thr_config.exec_time, thr_config.popt);
+				//cout << "_CAM is finished in " << real_runtime << " ms." << endl;
+				break;
 			case _ACT: //actuator_and_stirring
 				real_runtime = actuator(thr_config.exec_time, thr_config.popt);
 				//cout << "_ACT is finished in " << real_runtime << " ms." << endl;
