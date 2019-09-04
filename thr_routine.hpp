@@ -7,6 +7,8 @@
 
 #include "sched_deadline.hpp"
 
+pthread_barrier_t init_barrier;
+
 using namespace std;
 
 struct thr_arg {
@@ -20,6 +22,26 @@ struct thr_arg {
 	int parent;
 	int strategy;
 };
+
+enum thr_workload_mode {
+	_CAM, _TRCK, _DTCT, _ACT
+};
+
+struct sched_attr configure_attr(struct thr_arg targ) {
+	// set rt-sched attribute
+	struct sched_attr attr;
+	attr.size = sizeof(attr);
+	attr.sched_flags = 0;
+	attr.sched_nice = 0;
+	attr.sched_priority = 0;
+
+	attr.sched_policy = SCHED_DEADLINE; // 6
+	attr.sched_runtime = targ.exec_time;
+	attr.sched_deadline = targ.deadline;
+	attr.sched_period = targ.period; 
+
+	return attr;
+}
 
 void print_thr_config(struct thr_arg thr_config) {
 	cout << "        " << " ";
@@ -39,6 +61,16 @@ void *run_deadline(void *data) {
     free(data);
     print_thr_config(thr_config);
 
+
+	// configure thread attributes
+	struct sched_attr attr = configure_attr(thr_config);
+	int ret = sched_setattr(0, &attr, attr.sched_flags);
+	if(ret < 0) {
+		cout << "[ERROR] sched_setattr failed." << endl;
+		perror("sched_setattr");
+		exit(-1);
+	}
+	
 	return NULL;
 }
 
