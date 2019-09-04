@@ -10,6 +10,7 @@
 #include "sched_deadline.hpp"
 
 #include "act.hpp"
+#include "track.hpp"
 pthread_barrier_t init_barrier;
 
 using namespace std;
@@ -64,6 +65,8 @@ void *run_deadline(void *data) {
     free(data);
     print_thr_config(thr_config);
 
+    // init workloads
+	Track track;
 
 	// configure thread attributes
 	struct sched_attr attr = configure_attr(thr_config);
@@ -81,6 +84,11 @@ void *run_deadline(void *data) {
 			case _CAM: //sensor_read_camera_module
 				real_runtime = actuator(thr_config.exec_time, thr_config.popt);
 				//cout << "_CAM is finished in " << real_runtime << " ms." << endl;
+				break;
+			case _TRCK: //lane_tracking
+				// track.update();
+				real_runtime = autoware_vision_thr_routine(thr_config.popt);
+				//cout << "_TRCK is finished in " << real_runtime << " ms." << endl;
 				break;
 			case _ACT: //actuator_and_stirring
 				real_runtime = actuator(thr_config.exec_time, thr_config.popt);

@@ -21,6 +21,32 @@ sudo reboot
 ```
 
 
+## OpenCV 3.4.6
+```
+sudo apt-get install build-essential
+sudo apt-get install cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+git clone -b 3.4 https://github.com/opencv/opencv_contrib.git
+wget https://github.com/opencv/opencv/archive/3.4.6.zip
+unzip 3.4.6.zip
+cd opencv-3.4.6
+mkdir build
+cd build
+cmake -D CMAKE_BUILD_TYPE=Release -D CMAKE_INSTALL_PREFIX=/usr/local -D OPENCV_EXTRA_MODULES_PATH=/home/rubis/opencv_contrib/modules ..
+make -j7
+sudo make install
+echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib" >> ~/.bashrc
+source ~/.bashrc
+```
+
+### Lane detection
+```
+cd ~
+cd opencv_tests
+g++ -o track tracker.cpp -L/usr/local/lib `pkg-config --libs --cflags opencv` -std=c++11 -fopenmp
+./track lane
+```
+
+
 ## compiliation
 ```
 g++ -c -std=c++11 -o main.o main.cpp
